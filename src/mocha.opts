@@ -1,0 +1,9 @@
+-r 
+ts-node/register 
+--timeout 150000 
+--exclude 
+smoke-tests/**/*.ts 
+--recursive 
+--exit 
+test/ 
+**/*.test.ts
