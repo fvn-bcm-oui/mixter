@@ -45,16 +45,24 @@ MessageDeleted.prototype.getAggregateId = function getAggregateId(){
 var Message = function Message(events){
     var self = this;
 
-    var projection = decisionProjection.create().register(MessageQuacked, function(event) {
-        this.messageId = event.messageId;
-        this.author = event.author;
-    }).register(MessageRequacked, function(event) {
-        if(!this.requackers){
-            this.requackers = [];
-        }
-
-        this.requackers.push(event.requacker);
-    }).apply(events);
+	var projection = decisionProjection.create()
+		.register(MessageQuacked, function(event) {
+			this.messageId = event.messageId;
+			this.author = event.author;
+		})
+		.register(MessageRequacked, function(event) {
+			if(!this.requackers){
+				this.requackers = [];
+			}
+	        this.requackers.push(event.requacker);
+		})
+		.register(MessageDeleted, function(event) {
+			if(this.isDeleted){
+				return;
+			}
+			this.isDeleted = true;
+		})
+		.apply(events);
 
     self.requack = function requack(publishEvent, requacker) {
         if(projection.author.equals(requacker) || _.includes(projection.requackers, requacker)){
@@ -65,10 +73,9 @@ var Message = function Message(events){
 	};
 
 	self.delete = function (publishEvent, deleter) {
-		if(!projection.author.equals(deleter)) {
+		if(!projection.author.equals(deleter) || projection.isDeleted) {
 			return;
 		}
-
 		publishEvent(new MessageDeleted(projection.messageId));
 	};
 };
