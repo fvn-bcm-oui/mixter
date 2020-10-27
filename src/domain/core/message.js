@@ -62,7 +62,15 @@ var Message = function Message(events){
         }
 
         publishEvent(new MessageRequacked(projection.messageId, requacker));
-    };
+	};
+
+	self.delete = function (publishEvent, deleter) {
+		if(!projection.author.equals(deleter)) {
+			return;
+		}
+
+		publishEvent(new MessageDeleted(projection.messageId));
+	};
 };
 
 exports.quack = function quack(publishEvent, author, content){
