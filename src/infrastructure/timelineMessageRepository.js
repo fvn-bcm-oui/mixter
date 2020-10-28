@@ -18,6 +18,12 @@ var TimelineMessageRepository = function TimelineMessageRepository(){
         projections.push(projection);
     };
 
+	self.deleteMessage = function(messageId) {
+		_.remove(projections, {
+            messageId: messageId
+        });
+	}
+
     self.getMessageOfUser = function(userId) {
         return _.filter(projections, function(projection){
             return projection.ownerId.equals(userId);
