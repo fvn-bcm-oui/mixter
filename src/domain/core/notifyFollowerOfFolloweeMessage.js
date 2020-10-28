@@ -15,11 +15,20 @@ var NotifyFollowerOfFolloweeMessage = function NotifyFollowerOfFolloweeMessage(s
 		});
 	}
 
+	function onMessageRequacked(eventPublisher, messageRequacked) {
+		var followersSubs = _.filter(this.subscriptions,
+			function (s) { return s.followee === messageRequacked.requacker; });
+		_.each(followersSubs, function (subscriptionId) {
+			eventPublisher.publish(new subscription.FolloweeMessageQuacked(subscriptionId, messageRequacked.messageId));
+		});
+	}
+
     self.register = function register(eventPublisher) {
 		eventPublisher.on(subscription.UserFollowed, function(event) {
 			self.subscriptions.push(event.subscriptionId);
 		});
 		eventPublisher.on(message.MessageQuacked, onMessageQuacked.bind(self, eventPublisher));
+		eventPublisher.on(message.MessageRequacked, onMessageRequacked.bind(self, eventPublisher));
     };
 };
 
