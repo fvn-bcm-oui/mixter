@@ -13,6 +13,9 @@ var UpdateTimeline = function UpdateTimeline(timelineMessageRepository){
 				message.messageId);
 			timelineMessageRepository.save(projection)
 		});
+		eventPublisher.on(message.MessageDeleted, function(event) {
+			timelineMessageRepository.deleteMessage(event.messageId);
+		});
     };
 };
 
