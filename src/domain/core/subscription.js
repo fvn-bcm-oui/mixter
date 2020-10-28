@@ -48,6 +48,11 @@ var Subscription = function Subscription(events){
 		.register(UserFollowed, function(event) {
 			this.subscriptionId = event.subscriptionId;
 		})
+		.register(UserUnfollowed, function(event) {
+			if(this.subscriptionId = event.subscriptionId) {
+				this.subscriptionId = undefined;
+			}
+		})
 		.apply(events);
 
     self.unfollow = function unfollow(publishEvent) {
@@ -55,7 +60,9 @@ var Subscription = function Subscription(events){
 	};
 
 	self.notifyFollower = function notifyFollower(publishEvent, messageId) {
-		publishEvent(new FolloweeMessageQuacked(projection.subscriptionId, messageId));
+		if(projection.subscriptionId) {
+			publishEvent(new FolloweeMessageQuacked(projection.subscriptionId, messageId));
+		}
 	}
 };
 

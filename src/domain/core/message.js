@@ -56,7 +56,7 @@ var Message = function Message(events){
 			}
 	        this.requackers.push(event.requacker);
 		})
-		.register(MessageDeleted, function(event) {
+		.register(MessageDeleted, function() {
 			if(this.isDeleted){
 				return;
 			}
