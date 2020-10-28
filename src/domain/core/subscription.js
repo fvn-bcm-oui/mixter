@@ -1,4 +1,5 @@
 var valueType = require('../../valueType');
+var decisionProjection = require('../decisionProjection');
 
 var SubscriptionId = exports.SubscriptionId = valueType.extends(function SubscriptionId(follower, followee){
     this.follower = follower;
@@ -40,6 +41,25 @@ FolloweeMessageQuacked.prototype.getAggregateId = function getAggregateId(){
     return this.subscriptionId;
 };
 
+var Subscription = function Subscription(events){
+    var self = this;
+
+	var projection = decisionProjection.create()
+		.register(UserFollowed, function(event) {
+			this.subscriptionId = event.subscriptionId;
+		})
+		.apply(events);
+
+    self.unfollow = function unfollow(publishEvent) {
+        publishEvent(new UserUnfollowed(projection.subscriptionId));
+	};
+};
+
+
 exports.followUser = function(publishEvent, follower, followee) {
     publishEvent(new UserFollowed(new SubscriptionId(follower, followee)));
 };
+
+exports.create = function(events) {
+	return new Subscription(events);
+}
