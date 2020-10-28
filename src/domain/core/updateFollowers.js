@@ -7,6 +7,9 @@ var UpdateFollowers = function UpdateFollowers(followersRepository){
 		eventPublisher.on(subscription.UserFollowed, function onUserFollowed(event) {
 			followersRepository.save(event.subscriptionId);
 		})
+		eventPublisher.on(subscription.UserUnfollowed, function onUserUnfollowed(event) {
+			followersRepository.remove(event.subscriptionId);
+		})
     };
 };
 
